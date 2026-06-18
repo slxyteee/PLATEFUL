@@ -1,0 +1,104 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  /* Plateful brand colors */
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-text-primary: var(--text-primary);
+  --color-text-muted: var(--text-muted);
+  --color-border: var(--border);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+
+  /* shadcn compatibility */
+  --color-foreground: var(--text-primary);
+  --color-card: var(--surface);
+  --color-card-foreground: var(--text-primary);
+  --color-popover: var(--surface);
+  --color-popover-foreground: var(--text-primary);
+  --color-muted: var(--surface);
+  --color-muted-foreground: var(--text-muted);
+  --color-accent: var(--surface);
+  --color-accent-foreground: var(--text-primary);
+  --color-destructive: var(--error);
+  --color-input: var(--border);
+  --color-ring: var(--primary);
+
+  --font-sans: var(--font-jakarta);
+  --font-display: var(--font-fraunces);
+  --font-mono: ui-monospace, monospace;
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+}
+
+/* ─── Light mode ─────────────────────────────────────────────── */
+:root {
+  --background: #FFF8F0;
+  --surface: #FFFFFF;
+  --primary: #FF6B4A;
+  --primary-foreground: #FFFFFF;
+  --secondary: #8BAA7C;
+  --secondary-foreground: #FFFFFF;
+  --text-primary: #2B2118;
+  --text-muted: #8A7E70;
+  --border: #EDE2D3;
+  --warning: #E8A33D;
+  --error: #D14343;
+  --radius: 0.75rem;
+}
+
+/* ─── Dark mode ──────────────────────────────────────────────── */
+.dark {
+  --background: #1A1410;
+  --surface: #241B15;
+  --primary: #FF7A5C;
+  --primary-foreground: #FFFFFF;
+  --secondary: #9DBE8E;
+  --secondary-foreground: #1A1410;
+  --text-primary: #F5ECE3;
+  --text-muted: #B8AC9C;
+  --border: #3A2E24;
+  --warning: #F0B65A;
+  --error: #E05A5A;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-[var(--text-primary)] font-sans;
+  }
+  h1, h2 {
+    font-family: var(--font-fraunces), Georgia, serif;
+  }
+}
+
+/* Skeleton shimmer animation */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--border) 25%,
+    var(--surface) 50%,
+    var(--border) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}

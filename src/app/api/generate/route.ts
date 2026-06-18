@@ -41,14 +41,14 @@ function buildPrompt(payload: GeneratePayload): string {
       "match_score": 85,
       "missing_ingredients": ["ingredient not in pantry"],
       "ingredients": [
-        { "name": "chicken breast", "amount": "200g", "have": true },
-        { "name": "parmesan", "amount": "50g", "have": false }
+        { "name": "chicken breast", "quantity": 200, "unit": "g", "have": true },
+        { "name": "parmesan", "quantity": 50, "unit": "g", "have": false }
       ],
       "steps": [
-        { "step": 1, "instruction": "Do this first." },
-        { "step": 2, "instruction": "Then do this." }
+        { "step_number": 1, "instruction": "Do this first.", "duration_seconds": 60 },
+        { "step_number": 2, "instruction": "Then do this.", "duration_seconds": 120 }
       ],
-      "nutrition": { "calories": 450, "protein": 35, "carbs": 20, "fat": 18 }
+      "nutrition": { "calories": 450, "protein_g": 35, "carbs_g": 20, "fat_g": 18 }
     }
   ]
 }`,

@@ -30,14 +30,37 @@ function buildPrompt(payload: GeneratePayload): string {
     `- Spice tolerance: ${payload.spiceTolerance}`,
     `- Leftover mode: ${payload.leftoversMode ? "YES — prioritize recipes that use the most available ingredients, minimizing waste" : "no"}`,
     "",
+    "Return a JSON object with this EXACT structure (no other fields, no markdown):",
+    `{
+  "recipes": [
+    {
+      "title": "Recipe Name Here",
+      "cuisine": "Italian",
+      "duration_minutes": 30,
+      "difficulty": "easy",
+      "match_score": 85,
+      "missing_ingredients": ["ingredient not in pantry"],
+      "ingredients": [
+        { "name": "chicken breast", "amount": "200g", "have": true },
+        { "name": "parmesan", "amount": "50g", "have": false }
+      ],
+      "steps": [
+        { "step": 1, "instruction": "Do this first." },
+        { "step": 2, "instruction": "Then do this." }
+      ],
+      "nutrition": { "calories": 450, "protein": 35, "carbs": 20, "fat": 18 }
+    }
+  ]
+}`,
+    "",
     "RULES:",
-    "1. match_score = integer 0–100: what % of the recipe's required ingredients does the user already have",
-    "2. have:true for ingredients in AVAILABLE INGREDIENTS, have:false for others",
-    "3. missing_ingredients = names of required ingredients the user does NOT have",
-    "4. Respect dietary restrictions strictly",
-    "5. duration_minutes must be realistic for a home cook",
-    "6. nutrition values are per serving",
-    "7. Return valid JSON only — no markdown, no extra text",
+    "1. title must be a real descriptive recipe name (never 'Untitled')",
+    "2. match_score = integer 0–100: % of required ingredients the user already has",
+    "3. have:true for ingredients in AVAILABLE INGREDIENTS, have:false for others",
+    "4. missing_ingredients = names of required ingredients the user does NOT have",
+    "5. difficulty must be exactly 'easy', 'medium', or 'hard'",
+    "6. duration_minutes must be a realistic integer",
+    "7. nutrition values are per serving",
   ];
   return lines.join("\n");
 }

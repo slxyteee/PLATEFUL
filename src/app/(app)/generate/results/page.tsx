@@ -27,7 +27,7 @@ function toRecipe(raw: Record<string, unknown>): Recipe {
 export default function ResultsPage() {
   const router = useRouter();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -36,7 +36,6 @@ export default function ResultsPage() {
     if (payloadStr) {
       // Fresh generation — fetch now
       sessionStorage.removeItem("plateful-generate-payload");
-      setLoading(true);
       setError(null);
 
       fetch("/api/generate", {
@@ -64,15 +63,16 @@ export default function ResultsPage() {
         const parsed = JSON.parse(cached) as Record<string, unknown>[];
         if (Array.isArray(parsed) && parsed.length > 0) {
           setRecipes(parsed.map(toRecipe));
+          setLoading(false);
           return;
         }
       }
     } catch {}
 
-    router.replace("/generate");
-  }, [router]);
-
-  const count = loading ? 3 : recipes.length;
+    // Nothing to show — just stop loading and show empty state
+    setLoading(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="min-h-screen pb-24 lg:pb-8">
@@ -122,10 +122,22 @@ export default function ResultsPage() {
               Try again
             </button>
           </div>
+        ) : !loading && recipes.length === 0 ? (
+          <div className="text-center py-16">
+            <p className="text-4xl mb-4">🍽️</p>
+            <p className="font-display text-xl font-semibold mb-2">No recipes yet</p>
+            <p className="text-muted-foreground text-sm mb-6">Pick some ingredients and generate your first batch.</p>
+            <button
+              onClick={() => router.push("/generate")}
+              className="px-6 py-3 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-primary/90 transition-colors"
+            >
+              Generate recipes
+            </button>
+          </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {loading
-              ? Array.from({ length: count }).map((_, i) => <RecipeCardSkeleton key={i} />)
+              ? Array.from({ length: 3 }).map((_, i) => <RecipeCardSkeleton key={i} />)
               : recipes.map((r, i) => (
                   <RecipeCard
                     key={r.id}

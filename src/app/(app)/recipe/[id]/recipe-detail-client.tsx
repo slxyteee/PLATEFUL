@@ -183,7 +183,7 @@ export function RecipeDetailClient({ recipe, userId, isFavorited: initFav, hasCo
 
         {/* Back button */}
         <button
-          onClick={() => router.back()}
+          onClick={() => router.push("/generate/results")}
           className="absolute top-4 left-4 w-9 h-9 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/50 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />

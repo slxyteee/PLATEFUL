@@ -19,9 +19,10 @@ const NAV_ITEMS = [
 interface NavProps {
   displayName: string;
   avatarUrl?: string | null;
+  currentStreak?: number;
 }
 
-export function Nav({ displayName, avatarUrl }: NavProps) {
+export function Nav({ displayName, avatarUrl, currentStreak = 0 }: NavProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -99,10 +100,28 @@ export function Nav({ displayName, avatarUrl }: NavProps) {
               </button>
 
               {menuOpen && (
-                <div className="absolute right-0 top-full mt-2 w-52 bg-card border border-border rounded-2xl shadow-xl py-1.5 z-50">
-                  <div className="px-4 py-2.5 border-b border-border/60">
-                    <p className="text-sm font-semibold truncate">{displayName}</p>
+                <div className="absolute right-0 top-full mt-2 w-56 bg-card border border-border rounded-2xl shadow-xl overflow-hidden z-50">
+                  {/* User name */}
+                  <div className="px-4 pt-3 pb-2">
+                    <p className="text-xs text-muted-foreground font-medium">Signed in as</p>
+                    <p className="text-sm font-semibold truncate mt-0.5">{displayName}</p>
                   </div>
+
+                  {/* Streak */}
+                  <div className="mx-3 mb-2 rounded-xl bg-primary/8 border border-primary/15 px-3 py-2.5 flex items-center gap-3">
+                    <span className="text-2xl leading-none">🔥</span>
+                    <div>
+                      <p className="text-sm font-bold leading-none">
+                        {currentStreak > 0 ? `${currentStreak}-day streak` : "No streak yet"}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {currentStreak > 0 ? "Keep cooking!" : "Cook a recipe to start"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-border/60" />
+
                   <Link
                     href="/settings"
                     onClick={() => setMenuOpen(false)}
@@ -111,7 +130,7 @@ export function Nav({ displayName, avatarUrl }: NavProps) {
                     <Settings className="w-4 h-4 text-muted-foreground" />
                     Settings
                   </Link>
-                  <div className="my-1 border-t border-border/60" />
+                  <div className="border-t border-border/60" />
                   <button
                     onClick={handleSignOut}
                     className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-destructive hover:bg-destructive/10 transition-colors"

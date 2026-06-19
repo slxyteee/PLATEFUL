@@ -45,8 +45,10 @@ function buildPrompt(payload: GeneratePayload): string {
         { "name": "parmesan", "quantity": 50, "unit": "g", "have": false }
       ],
       "steps": [
-        { "step_number": 1, "instruction": "Heat olive oil in a large pan over medium-high heat. Season the chicken breast with salt, pepper, and paprika on both sides.", "duration_seconds": 120 },
-        { "step_number": 2, "instruction": "Add the chicken to the hot pan and cook for 5-6 minutes per side until golden brown and cooked through. Remove and let rest for 3 minutes.", "duration_seconds": 360 }
+        { "step_number": 1, "instruction": "Heat olive oil in a pan over medium-high heat.", "duration_seconds": 60 },
+        { "step_number": 2, "instruction": "Season chicken with salt, pepper, and paprika.", "duration_seconds": 30 },
+        { "step_number": 3, "instruction": "Add chicken to the pan.", "duration_seconds": 10 },
+        { "step_number": 4, "instruction": "Cook 5-6 minutes until golden brown, then flip.", "duration_seconds": 360 }
       ],
       "nutrition": { "calories": 450, "protein_g": 35, "carbs_g": 20, "fat_g": 18 }
     }
@@ -61,7 +63,7 @@ function buildPrompt(payload: GeneratePayload): string {
     "5. difficulty must be exactly 'easy', 'medium', or 'hard'",
     "6. duration_minutes must be a realistic integer",
     "7. nutrition values are per serving",
-    "8. Each step instruction must be 1-3 sentences with specific detail: include temperatures, cooking times, techniques, and visual cues like 'until golden brown' or 'until softened'. Never write a one-liner step.",
+    "8. Break steps into many small single-action steps (aim for 8-12 steps per recipe). Each step is ONE action only — one sentence, short and clear. Like a checklist: 'Heat oil in pan over medium heat.', 'Season chicken with salt and pepper.', 'Add garlic and cook 1 minute until fragrant.' Never combine multiple actions into one step.",
   ];
   return lines.join("\n");
 }

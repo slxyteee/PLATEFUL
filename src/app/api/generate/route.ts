@@ -35,7 +35,7 @@ async function fetchYouTubeVideo(title: string, cuisine: string): Promise<{ thum
   }
 }
 
-const MODELS = ["llama3-8b-8192", "gemma2-9b-it", "llama-3.3-70b-versatile"] as const;
+const MODELS = ["llama-3.1-8b-instant", "gemma2-9b-it", "llama-3.3-70b-versatile"] as const;
 
 const DURATION_LABEL: Record<string, string> = {
   quick: "30 minutes or less",
@@ -147,7 +147,7 @@ export async function POST(request: NextRequest) {
         ],
         response_format: { type: "json_object" },
         temperature: 0.75,
-        max_tokens: 4096,
+        max_tokens: 2000,
       });
       raw = completion.choices[0]?.message?.content ?? null;
       if (raw) break;

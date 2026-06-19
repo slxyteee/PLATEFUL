@@ -267,45 +267,52 @@ export function RecipeDetailClient({ recipe, userId, isFavorited: initFav, hasCo
 
         {/* Missing ingredients banner */}
         {missing.length > 0 && (
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex flex-col gap-3">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-semibold text-amber-800 flex items-center gap-2">
-                <span>🛒</span>
-                Missing {missing.length} ingredient{missing.length === 1 ? "" : "s"}
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-3 bg-amber-100/60 border-b border-amber-200">
+              <p className="text-sm font-semibold text-amber-900 flex items-center gap-2">
+                <ShoppingCart className="w-4 h-4" />
+                {missing.length} missing ingredient{missing.length === 1 ? "" : "s"}
               </p>
               <button
                 onClick={handleAddMissingToGrocery}
                 disabled={addedToGrocery}
                 className={cn(
-                  "shrink-0 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors",
+                  "text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors",
                   addedToGrocery
-                    ? "bg-green-100 text-green-700"
-                    : "bg-amber-200 text-amber-800 hover:bg-amber-300"
+                    ? "bg-green-500 text-white"
+                    : "bg-amber-800 text-white hover:bg-amber-900"
                 )}
               >
-                {addedToGrocery ? "✓ Added" : "Add all to list"}
+                {addedToGrocery ? "✓ Added to list" : "Add all to grocery list"}
               </button>
             </div>
-            <ul className="flex flex-col gap-2">
+            <ul className="divide-y divide-amber-100">
               {missing.map((ing) => (
-                <li key={ing} className="flex flex-col gap-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-amber-800 font-medium">{ing}</span>
+                <li key={ing} className="px-4 py-3 flex flex-col gap-2">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-sm font-medium text-amber-900">{ing}</span>
                     {!subs[ing] && (
                       <button
                         onClick={() => handleSubstitute(ing)}
                         disabled={subLoading === ing}
-                        className="text-xs text-amber-700 underline underline-offset-2 hover:text-amber-900 disabled:opacity-50"
+                        className={cn(
+                          "shrink-0 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors",
+                          subLoading === ing
+                            ? "border-amber-200 text-amber-400 bg-white"
+                            : "border-amber-300 text-amber-800 bg-white hover:bg-amber-100"
+                        )}
                       >
-                        {subLoading === ing ? "Finding sub…" : "Suggest substitute"}
+                        {subLoading === ing ? "Finding…" : "Find substitute"}
                       </button>
                     )}
                   </div>
                   {subs[ing] && (
-                    <div className="bg-white/60 rounded-lg px-3 py-2 text-xs text-amber-900">
-                      <span className="font-semibold">Use: {subs[ing].substitute}</span>
-                      {" · "}{subs[ing].ratio}
-                      <p className="text-amber-700 mt-0.5">{subs[ing].note}</p>
+                    <div className="bg-white rounded-xl px-3 py-2.5 border border-amber-100 flex flex-col gap-0.5">
+                      <p className="text-sm font-semibold text-amber-900">
+                        Use: {subs[ing].substitute}
+                        <span className="text-amber-500 font-normal ml-2 text-xs">{subs[ing].ratio}</span>
+                      </p>
+                      <p className="text-xs text-muted-foreground">{subs[ing].note}</p>
                     </div>
                   )}
                 </li>

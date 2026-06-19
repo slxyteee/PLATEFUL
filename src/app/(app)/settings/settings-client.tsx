@@ -116,24 +116,12 @@ export function SettingsClient({ profile, email }: Props) {
         <p className="text-muted-foreground text-sm mt-1">{email}</p>
       </div>
 
-      {/* Profile */}
-      <section className="flex flex-col gap-4">
-        <h2 className="font-display text-lg font-semibold">Profile</h2>
-        <div>
-          <label className="text-sm font-medium mb-1.5 block">Display name</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Your name"
-            className="w-full px-4 py-3 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground"
-          />
-        </div>
-      </section>
-
-      {/* Dietary prefs */}
+      {/* Dietary prefs — top priority */}
       <section className="flex flex-col gap-3">
-        <h2 className="font-display text-lg font-semibold">Dietary preferences</h2>
+        <div>
+          <h2 className="font-display text-lg font-semibold">Dietary preferences</h2>
+          <p className="text-xs text-muted-foreground mt-0.5">Used when generating recipes</p>
+        </div>
         <div className="flex flex-wrap gap-2">
           {DIETARY_OPTIONS.map((opt) => (
             <TogglePill
@@ -148,7 +136,10 @@ export function SettingsClient({ profile, email }: Props) {
 
       {/* Allergies */}
       <section className="flex flex-col gap-3">
-        <h2 className="font-display text-lg font-semibold">Allergies</h2>
+        <div>
+          <h2 className="font-display text-lg font-semibold">Allergies</h2>
+          <p className="text-xs text-muted-foreground mt-0.5">Recipes will never include these</p>
+        </div>
         <div className="flex flex-wrap gap-2">
           {ALLERGY_OPTIONS.map((opt) => (
             <TogglePill
@@ -158,6 +149,21 @@ export function SettingsClient({ profile, email }: Props) {
               onClick={() => toggleAllergy(opt)}
             />
           ))}
+        </div>
+      </section>
+
+      {/* Profile */}
+      <section className="flex flex-col gap-4">
+        <h2 className="font-display text-lg font-semibold">Profile</h2>
+        <div>
+          <label className="text-sm font-medium mb-1.5 block">Display name</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Your name"
+            className="w-full px-4 py-3 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground"
+          />
         </div>
       </section>
 

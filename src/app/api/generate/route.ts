@@ -17,7 +17,7 @@ const DURATION_LABEL: Record<string, string> = {
 
 function buildPrompt(payload: GeneratePayload): string {
   const lines = [
-    "You are a world-class chef. Generate exactly 3 practical recipe suggestions.",
+    `You are a world-class chef. Generate ${payload.ingredients.length >= 8 ? "5" : payload.ingredients.length >= 4 ? "4" : "3"} practical recipe suggestions.`,
     "",
     `AVAILABLE INGREDIENTS: ${payload.ingredients.join(", ")}`,
     "",
@@ -109,7 +109,7 @@ export async function POST(request: NextRequest) {
           {
             role: "system",
             content:
-              'You are a professional chef. Always respond with a valid JSON object containing a "recipes" array of exactly 3 recipe objects. No markdown, no explanation — JSON only.',
+              'You are a professional chef. Always respond with a valid JSON object containing a "recipes" array of recipe objects. No markdown, no explanation — JSON only.',
           },
           { role: "user", content: userPrompt },
         ],
@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid AI response format" }, { status: 500 });
   }
 
-  const recipes = (parsed.recipes ?? []).slice(0, 3);
+  const recipes = (parsed.recipes ?? []).slice(0, 5);
   if (!recipes.length) {
     return NextResponse.json({ error: "No recipes returned" }, { status: 500 });
   }

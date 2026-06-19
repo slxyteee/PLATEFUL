@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Sparkles, X, Minus, Plus, RefrigeratorIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -69,6 +69,19 @@ export function GenerateClient({ pantryIngredients, userDietary }: Props) {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [error, setError] = useState<string | null>(null);
 
+  // Restore last generated recipes when navigating back
+  useEffect(() => {
+    try {
+      const cached = sessionStorage.getItem("plateful-last-recipes");
+      if (cached) {
+        const parsed = JSON.parse(cached) as Record<string, unknown>[];
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setRecipes(parsed.map(toRecipe));
+        }
+      }
+    } catch {}
+  }, []);
+
   function removeIngredient(id: string) {
     setSelected((prev) => prev.filter((i) => i.id !== id));
   }
@@ -109,7 +122,11 @@ export function GenerateClient({ pantryIngredients, userDietary }: Props) {
         return;
       }
 
-      setRecipes((data.recipes ?? []).map(toRecipe));
+      const newRecipes = (data.recipes ?? []).map(toRecipe);
+      setRecipes(newRecipes);
+      try {
+        sessionStorage.setItem("plateful-last-recipes", JSON.stringify(data.recipes ?? []));
+      } catch {}
     } catch {
       setError("Network error — please try again");
     } finally {
@@ -346,7 +363,7 @@ export function GenerateClient({ pantryIngredients, userDietary }: Props) {
           ) : (
             <>
               <Sparkles className="w-5 h-5" />
-              Generate 3 recipes
+              Generate recipes
             </>
           )}
         </button>

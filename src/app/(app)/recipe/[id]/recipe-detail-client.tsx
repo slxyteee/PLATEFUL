@@ -402,7 +402,7 @@ export function RecipeDetailClient({ recipe, userId, isFavorited: initFav, hasCo
 
       {/* Streak celebration */}
       {streak !== null && (
-        <div className="fixed inset-x-4 bottom-28 lg:bottom-8 z-50 pointer-events-none">
+        <div className="fixed inset-x-4 bottom-36 lg:bottom-24 z-50 pointer-events-none">
           <div className="max-w-sm mx-auto bg-primary text-white rounded-2xl px-5 py-4 shadow-xl flex items-center gap-3 animate-in slide-in-from-bottom-4 duration-300">
             <Flame className="w-6 h-6 shrink-0" />
             <div>
@@ -418,7 +418,7 @@ export function RecipeDetailClient({ recipe, userId, isFavorited: initFav, hasCo
       )}
 
       {/* Sticky bottom action */}
-      <div className="fixed bottom-0 left-0 right-0 lg:absolute lg:relative p-4 bg-background/95 backdrop-blur-sm border-t border-border/50 lg:border-0 lg:bg-transparent lg:backdrop-blur-none">
+      <div className="fixed bottom-14 lg:bottom-0 left-0 right-0 lg:static z-40 p-4 bg-background border-t border-border/50 lg:border-0 lg:bg-transparent">
         <div className="max-w-2xl mx-auto flex gap-3">
           <button
             onClick={handleAddMissingToGrocery}

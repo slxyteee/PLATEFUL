@@ -1,20 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Sparkles, X, Minus, Plus, RefrigeratorIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getEmoji } from "@/lib/ingredient-icons";
-import { RecipeCard, RecipeCardSkeleton } from "@/components/recipe-card";
-import type { Ingredient, Recipe, RecipeIngredient, RecipeStep, RecipeNutrition } from "@/types";
+import type { Ingredient } from "@/types";
 
 const CUISINES = [
   "no-preference", "Italian", "Mexican", "Japanese", "Chinese", "Indian",
   "Thai", "Mediterranean", "French", "American", "Korean", "Middle Eastern",
-];
-
-const DIETARY_OPTIONS = [
-  "vegetarian", "vegan", "gluten-free", "dairy-free", "halal", "kosher", "nut-free",
 ];
 
 const MEAL_TYPES = ["any", "breakfast", "lunch", "dinner", "snack", "dessert"];
@@ -35,24 +30,6 @@ interface Props {
   userDietary: string[];
 }
 
-function toRecipe(raw: Record<string, unknown>): Recipe {
-  return {
-    id: raw.id as string,
-    user_id: raw.user_id as string,
-    title: raw.title as string,
-    cuisine: raw.cuisine as string,
-    duration_minutes: raw.duration_minutes as number,
-    difficulty: raw.difficulty as "easy" | "medium" | "hard",
-    match_score: raw.match_score as number,
-    image_url: raw.image_url as string | null,
-    ingredients: raw.ingredients as RecipeIngredient[],
-    steps: raw.steps as RecipeStep[],
-    nutrition: raw.nutrition as RecipeNutrition | null,
-    missing_ingredients: raw.missing_ingredients as string[] | null,
-    created_at: raw.created_at as string,
-  };
-}
-
 export function GenerateClient({ pantryIngredients, userDietary }: Props) {
   const router = useRouter();
   const [selected, setSelected] = useState<Ingredient[]>(pantryIngredients);
@@ -65,23 +42,6 @@ export function GenerateClient({ pantryIngredients, userDietary }: Props) {
     spiceTolerance: "medium",
     leftoversMode: false,
   });
-  const [generating, setGenerating] = useState(false);
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [error, setError] = useState<string | null>(null);
-
-  // Restore last generated recipes when navigating back
-  useEffect(() => {
-    try {
-      const cached = sessionStorage.getItem("plateful-last-recipes");
-      if (cached) {
-        const parsed = JSON.parse(cached) as Record<string, unknown>[];
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setRecipes(parsed.map(toRecipe));
-        }
-      }
-    } catch {}
-  }, []);
-
   function removeIngredient(id: string) {
     setSelected((prev) => prev.filter((i) => i.id !== id));
   }
@@ -90,53 +50,15 @@ export function GenerateClient({ pantryIngredients, userDietary }: Props) {
     setFilters((prev) => ({ ...prev, [key]: val }));
   }
 
-  function toggleDietary(val: string) {
-    setFilters((prev) => ({
-      ...prev,
-      dietary: prev.dietary.includes(val)
-        ? prev.dietary.filter((x) => x !== val)
-        : [...prev.dietary, val],
-    }));
-  }
-
-  async function generate() {
+function generate() {
     if (!selected.length) return;
-    setGenerating(true);
-    setError(null);
-    setRecipes([]);
-
     try {
-      const res = await fetch("/api/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ingredients: selected.map((i) => i.name),
-          ...filters,
-        }),
-      });
-
-      const data = await res.json() as { recipes?: Record<string, unknown>[]; error?: string };
-
-      if (!res.ok) {
-        setError(data.error ?? "Something went wrong");
-        return;
-      }
-
-      const newRecipes = (data.recipes ?? []).map(toRecipe);
-      setRecipes(newRecipes);
-      try {
-        sessionStorage.setItem("plateful-last-recipes", JSON.stringify(data.recipes ?? []));
-      } catch {}
-      router.push("/generate/results");
-    } catch {
-      setError("Network error — please try again");
-    } finally {
-      setGenerating(false);
-    }
-  }
-
-  async function handleCook(recipe: Recipe) {
-    router.push(`/recipe/${recipe.id}`);
+      sessionStorage.setItem("plateful-generate-payload", JSON.stringify({
+        ingredients: selected.map((i) => i.name),
+        ...filters,
+      }));
+    } catch {}
+    router.push("/generate/results");
   }
 
   return (
@@ -327,7 +249,7 @@ export function GenerateClient({ pantryIngredients, userDietary }: Props) {
         {/* Generate button */}
         <button
           onClick={generate}
-          disabled={generating || !selected.length}
+          disabled={!selected.length}
           className={cn(
             "flex items-center justify-center gap-2 w-full py-4 rounded-2xl font-semibold text-base transition-all",
             selected.length
@@ -335,42 +257,11 @@ export function GenerateClient({ pantryIngredients, userDietary }: Props) {
               : "bg-muted text-muted-foreground cursor-not-allowed"
           )}
         >
-          {generating ? (
-            <>
-              <span className="animate-spin text-xl">⚙️</span>
-              Generating your recipes…
-            </>
-          ) : (
-            <>
-              <Sparkles className="w-5 h-5" />
-              Generate recipes
-            </>
-          )}
+          <Sparkles className="w-5 h-5" />
+          Generate recipes
         </button>
 
-        {/* Error */}
-        {error && (
-          <div className="bg-destructive/10 text-destructive text-sm rounded-xl px-4 py-3 border border-destructive/20">
-            {error}
-          </div>
-        )}
       </div>
-
-      {/* Results */}
-      {(generating || recipes.length > 0) && (
-        <section>
-          <h2 className="font-display text-xl font-semibold mb-4">
-            {generating ? "Cooking up ideas…" : `${recipes.length} recipes for you`}
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {generating
-              ? Array.from({ length: 3 }).map((_, i) => <RecipeCardSkeleton key={i} />)
-              : recipes.map((r, i) => (
-                  <RecipeCard key={r.id} recipe={r} index={i} onCook={handleCook} />
-                ))}
-          </div>
-        </section>
-      )}
     </div>
   );
 }

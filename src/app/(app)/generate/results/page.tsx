@@ -27,22 +27,52 @@ function toRecipe(raw: Record<string, unknown>): Recipe {
 export default function ResultsPage() {
   const router = useRouter();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [loaded, setLoaded] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const payloadStr = sessionStorage.getItem("plateful-generate-payload");
+
+    if (payloadStr) {
+      // Fresh generation — fetch now
+      sessionStorage.removeItem("plateful-generate-payload");
+      setLoading(true);
+      setError(null);
+
+      fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payloadStr,
+      })
+        .then((r) => r.json())
+        .then((data: { recipes?: Record<string, unknown>[]; error?: string }) => {
+          if (data.error) { setError(data.error); return; }
+          const mapped = (data.recipes ?? []).map(toRecipe);
+          setRecipes(mapped);
+          try { sessionStorage.setItem("plateful-last-recipes", JSON.stringify(data.recipes ?? [])); } catch {}
+        })
+        .catch(() => setError("Something went wrong. Please try again."))
+        .finally(() => setLoading(false));
+
+      return;
+    }
+
+    // Returning to page — show cached
     try {
       const cached = sessionStorage.getItem("plateful-last-recipes");
       if (cached) {
         const parsed = JSON.parse(cached) as Record<string, unknown>[];
         if (Array.isArray(parsed) && parsed.length > 0) {
           setRecipes(parsed.map(toRecipe));
-          setLoaded(true);
           return;
         }
       }
     } catch {}
+
     router.replace("/generate");
   }, [router]);
+
+  const count = loading ? 3 : recipes.length;
 
   return (
     <div className="min-h-screen pb-24 lg:pb-8">
@@ -58,10 +88,12 @@ export default function ResultsPage() {
           </button>
 
           <div className="text-center">
-            <h1 className="font-display text-base font-semibold">Your recipes</h1>
-            {loaded && (
+            <h1 className="font-display text-base font-semibold">
+              {loading ? "Cooking up ideas…" : "Your recipes"}
+            </h1>
+            {!loading && recipes.length > 0 && (
               <p className="text-xs text-muted-foreground">
-                {recipes.length} recipe{recipes.length === 1 ? "" : "s"} generated
+                {recipes.length} recipe{recipes.length === 1 ? "" : "s"} for you
               </p>
             )}
           </div>
@@ -76,28 +108,33 @@ export default function ResultsPage() {
         </div>
       </div>
 
-      {/* Results */}
+      {/* Content */}
       <div className="max-w-6xl mx-auto px-4 py-6">
-        {!loaded ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {Array.from({ length: 3 }).map((_, i) => <RecipeCardSkeleton key={i} />)}
+        {error ? (
+          <div className="text-center py-16">
+            <p className="text-4xl mb-4">😕</p>
+            <p className="font-display text-xl font-semibold mb-2">Something went wrong</p>
+            <p className="text-muted-foreground text-sm mb-6">{error}</p>
+            <button
+              onClick={() => router.push("/generate")}
+              className="px-6 py-3 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-primary/90 transition-colors"
+            >
+              Try again
+            </button>
           </div>
         ) : (
-          <>
-            <p className="text-muted-foreground text-sm mb-5">
-              Based on what&apos;s in your fridge — tap a recipe to see the full instructions.
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {recipes.map((r, i) => (
-                <RecipeCard
-                  key={r.id}
-                  recipe={r}
-                  index={i}
-                  onCook={() => router.push(`/recipe/${r.id}`)}
-                />
-              ))}
-            </div>
-          </>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {loading
+              ? Array.from({ length: count }).map((_, i) => <RecipeCardSkeleton key={i} />)
+              : recipes.map((r, i) => (
+                  <RecipeCard
+                    key={r.id}
+                    recipe={r}
+                    index={i}
+                    onCook={() => router.push(`/recipe/${r.id}`)}
+                  />
+                ))}
+          </div>
         )}
       </div>
     </div>

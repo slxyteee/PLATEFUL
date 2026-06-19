@@ -10,7 +10,7 @@ async function fetchYouTubeVideo(title: string, cuisine: string): Promise<{ thum
   const apiKey = process.env.YOUTUBE_API_KEY;
   if (!apiKey) return null;
   const query = `${title} ${cuisine} recipe cooking`;
-  const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&videoDuration=medium&maxResults=1&relevanceLanguage=en&key=${apiKey}`;
+  const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=1&relevanceLanguage=en&key=${apiKey}`;
   try {
     const res = await fetch(url, { cache: "no-store" });
     if (!res.ok) return null;

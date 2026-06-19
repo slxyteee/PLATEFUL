@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { ChefHat, Heart, Clock, ShoppingCart, Settings, LogOut, Package, User } from "lucide-react";
+import { ChefHat, Heart, Clock, ShoppingCart, Settings, LogOut, Package } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -103,14 +103,6 @@ export function Nav({ displayName, avatarUrl }: NavProps) {
                   <div className="px-4 py-2.5 border-b border-border/60">
                     <p className="text-sm font-semibold truncate">{displayName}</p>
                   </div>
-                  <Link
-                    href="/settings"
-                    onClick={() => setMenuOpen(false)}
-                    className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
-                  >
-                    <User className="w-4 h-4 text-muted-foreground" />
-                    Profile &amp; Diet
-                  </Link>
                   <Link
                     href="/settings"
                     onClick={() => setMenuOpen(false)}

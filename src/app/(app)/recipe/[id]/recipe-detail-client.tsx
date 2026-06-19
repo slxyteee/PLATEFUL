@@ -267,9 +267,9 @@ export function RecipeDetailClient({ recipe, userId, isFavorited: initFav, hasCo
 
         {/* Missing ingredients banner */}
         {missing.length > 0 && (
-          <div className="rounded-2xl border border-amber-200 bg-amber-50 overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-3 bg-amber-100/60 border-b border-amber-200">
-              <p className="text-sm font-semibold text-amber-900 flex items-center gap-2">
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 dark:border-amber-800/50 dark:bg-amber-900/10 overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-3 bg-amber-100/60 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800/50">
+              <p className="text-sm font-semibold text-amber-900 dark:text-amber-200 flex items-center gap-2">
                 <ShoppingCart className="w-4 h-4" />
                 {missing.length} missing ingredient{missing.length === 1 ? "" : "s"}
               </p>
@@ -286,11 +286,11 @@ export function RecipeDetailClient({ recipe, userId, isFavorited: initFav, hasCo
                 {addedToGrocery ? "✓ Added to list" : "Add all to grocery list"}
               </button>
             </div>
-            <ul className="divide-y divide-amber-100">
+            <ul className="divide-y divide-amber-100 dark:divide-amber-800/30">
               {missing.map((ing) => (
                 <li key={ing} className="px-4 py-3 flex flex-col gap-2">
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-sm font-medium text-amber-900">{ing}</span>
+                    <span className="text-sm font-medium text-amber-900 dark:text-amber-200 capitalize">{ing}</span>
                     {!subs[ing] && (
                       <button
                         onClick={() => handleSubstitute(ing)}
@@ -307,10 +307,10 @@ export function RecipeDetailClient({ recipe, userId, isFavorited: initFav, hasCo
                     )}
                   </div>
                   {subs[ing] && (
-                    <div className="bg-white rounded-xl px-3 py-2.5 border border-amber-100 flex flex-col gap-0.5">
-                      <p className="text-sm font-semibold text-amber-900">
+                    <div className="bg-white dark:bg-card rounded-xl px-3 py-2.5 border border-amber-100 dark:border-border flex flex-col gap-0.5">
+                      <p className="text-sm font-semibold text-amber-900 dark:text-foreground">
                         Use: {subs[ing].substitute}
-                        <span className="text-amber-500 font-normal ml-2 text-xs">{subs[ing].ratio}</span>
+                        <span className="text-amber-500 dark:text-amber-400 font-normal ml-2 text-xs">{subs[ing].ratio}</span>
                       </p>
                       <p className="text-xs text-muted-foreground">{subs[ing].note}</p>
                     </div>
@@ -331,8 +331,8 @@ export function RecipeDetailClient({ recipe, userId, isFavorited: initFav, hasCo
                 className={cn(
                   "flex items-center gap-3 px-3 py-2.5 rounded-xl border text-sm",
                   ing.have
-                    ? "bg-green-50 border-green-200"
-                    : "bg-amber-50 border-amber-200"
+                    ? "bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800/50"
+                    : "bg-amber-50 border-amber-200 dark:bg-amber-900/20 dark:border-amber-800/50"
                 )}
               >
                 <span className={cn("w-2 h-2 rounded-full shrink-0", ing.have ? "bg-green-500" : "bg-amber-500")} />

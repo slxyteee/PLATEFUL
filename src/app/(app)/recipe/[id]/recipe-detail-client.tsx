@@ -286,6 +286,42 @@ export function RecipeDetailClient({ recipe, userId, isFavorited: initFav, hasCo
           </div>
         </div>
 
+        {/* YouTube watch button */}
+        {recipe.youtube_url && (
+          <a
+            href={recipe.youtube_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 p-3 rounded-2xl border border-border bg-card hover:border-[#FF0000]/40 hover:bg-[#FF0000]/5 transition-all duration-200 group"
+          >
+            {/* Thumbnail */}
+            {recipe.image_url && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={recipe.image_url}
+                alt={recipe.title}
+                className="w-20 h-14 rounded-xl object-cover shrink-0"
+              />
+            )}
+            {/* Play icon + text */}
+            <div className="flex items-center gap-3 flex-1 min-w-0">
+              <div className="w-9 h-9 rounded-full bg-[#FF0000] flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-200">
+                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white ml-0.5">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold leading-tight">Watch on YouTube</p>
+                <p className="text-xs text-muted-foreground mt-0.5 truncate">{recipe.title}</p>
+              </div>
+            </div>
+            {/* Arrow */}
+            <svg viewBox="0 0 24 24" className="w-4 h-4 text-muted-foreground shrink-0 group-hover:text-[#FF0000] transition-colors">
+              <path fill="currentColor" d="M9 18l6-6-6-6"/>
+            </svg>
+          </a>
+        )}
+
         {/* Nutrition */}
         {recipe.nutrition && (
           <div className="grid grid-cols-4 gap-2">

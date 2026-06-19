@@ -46,6 +46,7 @@ export interface Recipe {
   difficulty: "easy" | "medium" | "hard";
   match_score: number;
   image_url: string | null;
+  youtube_url?: string | null;
   ingredients: RecipeIngredient[];
   steps: RecipeStep[];
   nutrition: RecipeNutrition | null;

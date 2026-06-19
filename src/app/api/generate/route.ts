@@ -6,6 +6,33 @@ import type { Json } from "@/types/database.types";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY! });
 
+async function fetchYouTubeVideo(title: string, cuisine: string): Promise<{ thumbnailUrl: string; videoUrl: string } | null> {
+  const apiKey = process.env.YOUTUBE_API_KEY;
+  if (!apiKey) return null;
+  const query = `${title} ${cuisine} recipe cooking`;
+  const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=1&relevanceLanguage=en&key=${apiKey}`;
+  try {
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) return null;
+    const data = await res.json() as {
+      items?: Array<{
+        id: { videoId: string };
+        snippet: { thumbnails: { high?: { url: string }; medium?: { url: string }; default: { url: string } } };
+      }>;
+    };
+    const item = data.items?.[0];
+    if (!item) return null;
+    const videoId = item.id.videoId;
+    const thumbnailUrl =
+      item.snippet.thumbnails.high?.url ??
+      item.snippet.thumbnails.medium?.url ??
+      item.snippet.thumbnails.default.url;
+    return { thumbnailUrl, videoUrl: `https://www.youtube.com/watch?v=${videoId}` };
+  } catch {
+    return null;
+  }
+}
+
 const MODELS = ["moonshotai/kimi-k2-instruct-0905", "llama-3.3-70b-versatile"] as const;
 
 const DURATION_LABEL: Record<string, string> = {
@@ -170,5 +197,28 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Failed to save recipes" }, { status: 500 });
   }
 
-  return NextResponse.json({ recipes: saved });
+  // Fetch YouTube videos in parallel for each recipe
+  const ytResults = await Promise.all(
+    saved.map((r) => fetchYouTubeVideo(r.title, r.cuisine))
+  );
+
+  // Update DB with YouTube data and merge into response
+  await Promise.all(
+    saved.map((r, i) => {
+      const yt = ytResults[i];
+      if (!yt) return Promise.resolve();
+      return supabase
+        .from("recipes_generated")
+        .update({ image_url: yt.thumbnailUrl, youtube_url: yt.videoUrl })
+        .eq("id", r.id);
+    })
+  );
+
+  const finalRecipes = saved.map((r, i) => {
+    const yt = ytResults[i];
+    if (!yt) return r;
+    return { ...r, image_url: yt.thumbnailUrl, youtube_url: yt.videoUrl };
+  });
+
+  return NextResponse.json({ recipes: finalRecipes });
 }

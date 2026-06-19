@@ -59,6 +59,16 @@ export function RecipeCard({ recipe, index = 0, onCook }: RecipeCardProps) {
           </div>
         )}
 
+        {/* YouTube badge */}
+        {recipe.youtube_url && (
+          <div className="absolute bottom-2.5 left-2.5 flex items-center gap-1 bg-black/65 backdrop-blur-sm rounded-full px-2 py-1 border border-white/10">
+            <svg viewBox="0 0 24 24" className="w-3 h-3 fill-[#FF0000]">
+              <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.6 15.6V8.4l6.3 3.6-6.3 3.6z"/>
+            </svg>
+            <span className="text-white text-[10px] font-semibold tracking-wide">Watch</span>
+          </div>
+        )}
+
         {/* Match score badge */}
         <div
           className={cn(

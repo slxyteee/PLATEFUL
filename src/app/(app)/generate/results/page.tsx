@@ -16,6 +16,7 @@ function toRecipe(raw: Record<string, unknown>): Recipe {
     difficulty: raw.difficulty as "easy" | "medium" | "hard",
     match_score: raw.match_score as number,
     image_url: raw.image_url as string | null,
+    youtube_url: raw.youtube_url as string | null | undefined,
     ingredients: raw.ingredients as RecipeIngredient[],
     steps: raw.steps as RecipeStep[],
     nutrition: raw.nutrition as RecipeNutrition | null,

@@ -181,6 +181,28 @@ export function RecipeDetailClient({ recipe, userId, isFavorited: initFav, hasCo
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
+        {/* YouTube play button — centered, always visible */}
+        {recipe.youtube_url && (
+          <a
+            href={recipe.youtube_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="absolute inset-0 flex items-center justify-center group/play"
+            aria-label={`Watch ${recipe.title} on YouTube`}
+          >
+            {/* Play circle */}
+            <div className="w-14 h-14 rounded-full bg-black/50 backdrop-blur-sm border border-white/25 flex items-center justify-center shadow-lg group-hover/play:scale-110 group-hover/play:bg-[#FF0000]/85 transition-all duration-200">
+              <svg viewBox="0 0 24 24" className="w-6 h-6 fill-white ml-0.5">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </div>
+            {/* "Watch on YouTube" pill — shows on hover/focus */}
+            <span className="absolute bottom-14 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1 rounded-full opacity-0 group-hover/play:opacity-100 transition-opacity duration-150 whitespace-nowrap pointer-events-none">
+              Watch on YouTube
+            </span>
+          </a>
+        )}
+
         {/* Back button */}
         <button
           onClick={() => router.push("/generate/results")}
@@ -209,6 +231,16 @@ export function RecipeDetailClient({ recipe, userId, isFavorited: initFav, hasCo
         >
           {recipe.match_score}% match
         </div>
+
+        {/* YouTube label bottom-left */}
+        {recipe.youtube_url && (
+          <div className="absolute bottom-4 left-4 flex items-center gap-1.5 bg-black/55 backdrop-blur-sm rounded-full px-2.5 py-1 border border-white/10">
+            <svg viewBox="0 0 24 24" className="w-3 h-3 fill-[#FF0000]">
+              <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.6 15.6V8.4l6.3 3.6-6.3 3.6z"/>
+            </svg>
+            <span className="text-white text-[10px] font-semibold">Tap to watch</span>
+          </div>
+        )}
       </div>
 
       {/* Content */}

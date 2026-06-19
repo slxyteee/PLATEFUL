@@ -36,6 +36,7 @@ export default async function RecipePage({ params }: PageProps) {
     difficulty: raw.difficulty as "easy" | "medium" | "hard",
     match_score: raw.match_score,
     image_url: raw.image_url,
+    youtube_url: raw.youtube_url,
     ingredients: raw.ingredients as unknown as RecipeIngredient[],
     steps: raw.steps as unknown as RecipeStep[],
     nutrition: raw.nutrition as unknown as RecipeNutrition | null,

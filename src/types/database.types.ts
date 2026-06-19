@@ -39,6 +39,7 @@ type RecipeRow = {
   difficulty: "easy" | "medium" | "hard";
   match_score: number;
   image_url: string | null;
+  youtube_url: string | null;
   ingredients: Json;
   steps: Json;
   nutrition: Json | null;
@@ -106,7 +107,7 @@ export interface Database {
       };
       recipes_generated: {
         Row: RecipeRow;
-        Insert: Omit<RecipeRow, "id" | "created_at">;
+        Insert: Omit<RecipeRow, "id" | "created_at" | "youtube_url"> & { youtube_url?: string | null };
         Update: Partial<RecipeRow>;
         Relationships: [];
       };

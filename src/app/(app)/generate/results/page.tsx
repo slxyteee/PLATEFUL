@@ -35,6 +35,7 @@ export default function ResultsPage() {
 
     if (payloadStr) {
       // Fresh generation — fetch now
+      sessionStorage.setItem("plateful-last-payload", payloadStr);
       sessionStorage.removeItem("plateful-generate-payload");
       setError(null);
 

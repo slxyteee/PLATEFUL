@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Sparkles, X, Minus, Plus, RefrigeratorIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -42,6 +42,40 @@ export function GenerateClient({ pantryIngredients, userDietary }: Props) {
     spiceTolerance: "medium",
     leftoversMode: false,
   });
+  const [hasCached, setHasCached] = useState(false);
+  const [lastPayloadStr, setLastPayloadStr] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      const cached = sessionStorage.getItem("plateful-last-recipes");
+      const last = sessionStorage.getItem("plateful-last-payload");
+      const hasRecipes = !!cached && (JSON.parse(cached) as unknown[]).length > 0;
+      setHasCached(hasRecipes);
+      if (last) setLastPayloadStr(last);
+    } catch {}
+  }, []);
+
+  // Normalized comparison so add-then-remove counts as unchanged
+  function toComparable(ingredients: string[], f: GenerateFilters) {
+    return JSON.stringify({
+      ingredients: [...ingredients].sort(),
+      cuisine: f.cuisine,
+      duration: f.duration,
+      dietary: [...f.dietary].sort(),
+      mealType: f.mealType,
+      servings: f.servings,
+      spiceTolerance: f.spiceTolerance,
+      leftoversMode: f.leftoversMode,
+    });
+  }
+
+  const currentComparable = toComparable(selected.map((i) => i.name), filters);
+  const isDirty = lastPayloadStr
+    ? (() => { try { const p = JSON.parse(lastPayloadStr) as { ingredients: string[] } & GenerateFilters; return toComparable(p.ingredients, p) !== currentComparable; } catch { return true; } })()
+    : false;
+
+  const showCheckButton = hasCached && !isDirty;
+
   function removeIngredient(id: string) {
     setSelected((prev) => prev.filter((i) => i.id !== id));
   }
@@ -50,7 +84,7 @@ export function GenerateClient({ pantryIngredients, userDietary }: Props) {
     setFilters((prev) => ({ ...prev, [key]: val }));
   }
 
-function generate() {
+  function generate() {
     if (!selected.length) return;
     try {
       sessionStorage.setItem("plateful-generate-payload", JSON.stringify({
@@ -58,6 +92,10 @@ function generate() {
         ...filters,
       }));
     } catch {}
+    router.push("/generate/results");
+  }
+
+  function checkRecipes() {
     router.push("/generate/results");
   }
 
@@ -246,20 +284,30 @@ function generate() {
           </button>
         </section>
 
-        {/* Generate button */}
-        <button
-          onClick={generate}
-          disabled={!selected.length}
-          className={cn(
-            "flex items-center justify-center gap-2 w-full py-4 rounded-2xl font-semibold text-base transition-all",
-            selected.length
-              ? "bg-primary text-white hover:bg-primary/90 hover:scale-[1.01] active:scale-[0.99] shadow-md shadow-primary/20"
-              : "bg-muted text-muted-foreground cursor-not-allowed"
-          )}
-        >
-          <Sparkles className="w-5 h-5" />
-          Generate recipes
-        </button>
+        {/* Action button */}
+        {showCheckButton ? (
+          <button
+            onClick={checkRecipes}
+            className="flex items-center justify-center gap-2 w-full py-4 rounded-2xl font-semibold text-base bg-secondary text-white hover:bg-secondary/90 hover:scale-[1.01] active:scale-[0.99] shadow-md shadow-secondary/20 transition-all"
+          >
+            <span className="text-lg leading-none">🍽️</span>
+            Check your recipes
+          </button>
+        ) : (
+          <button
+            onClick={generate}
+            disabled={!selected.length}
+            className={cn(
+              "flex items-center justify-center gap-2 w-full py-4 rounded-2xl font-semibold text-base transition-all",
+              selected.length
+                ? "bg-primary text-white hover:bg-primary/90 hover:scale-[1.01] active:scale-[0.99] shadow-md shadow-primary/20"
+                : "bg-muted text-muted-foreground cursor-not-allowed"
+            )}
+          >
+            <Sparkles className="w-5 h-5" />
+            Generate recipes
+          </button>
+        )}
 
       </div>
     </div>

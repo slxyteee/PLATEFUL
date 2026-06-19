@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import type { GeneratePayload, RecipeIngredient, RecipeStep, RecipeNutrition } from "@/types";
 import type { Json } from "@/types/database.types";
 
+export const maxDuration = 60;
+
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY! });
 
 async function fetchYouTubeVideo(title: string, cuisine: string): Promise<{ thumbnailUrl: string; videoUrl: string } | null> {
@@ -33,7 +35,7 @@ async function fetchYouTubeVideo(title: string, cuisine: string): Promise<{ thum
   }
 }
 
-const MODELS = ["llama-3.3-70b-versatile", "llama-3.1-70b-versatile", "mixtral-8x7b-32768"] as const;
+const MODELS = ["llama3-8b-8192", "llama-3.3-70b-versatile"] as const;
 
 const DURATION_LABEL: Record<string, string> = {
   quick: "30 minutes or less",

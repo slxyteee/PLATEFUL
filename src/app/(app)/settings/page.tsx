@@ -9,11 +9,22 @@ export default async function SettingsPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase
+  let { data: profile } = await supabase
     .from("profiles")
     .select("*")
     .eq("id", user.id)
     .single();
+
+  // Auto-create profile if missing (trigger may have failed at signup)
+  if (!profile) {
+    await supabase.from("profiles").upsert({ id: user.id });
+    const { data: fresh } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", user.id)
+      .single();
+    profile = fresh;
+  }
 
   if (!profile) redirect("/onboarding");
 
@@ -24,11 +35,11 @@ export default async function SettingsPage() {
         display_name: profile.display_name,
         dietary_prefs: profile.dietary_prefs ?? [],
         allergies: profile.allergies ?? [],
-        default_servings: profile.default_servings,
-        units: profile.units as "imperial" | "metric",
-        theme_preference: profile.theme_preference as "light" | "dark" | "system",
-        reduce_motion: profile.reduce_motion,
-        text_size: profile.text_size as "small" | "medium" | "large",
+        default_servings: profile.default_servings ?? 2,
+        units: (profile.units ?? "metric") as "imperial" | "metric",
+        theme_preference: (profile.theme_preference ?? "system") as "light" | "dark" | "system",
+        reduce_motion: profile.reduce_motion ?? false,
+        text_size: (profile.text_size ?? "medium") as "small" | "medium" | "large",
       }}
       email={user.email ?? ""}
     />

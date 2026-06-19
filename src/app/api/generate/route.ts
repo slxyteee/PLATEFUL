@@ -33,7 +33,7 @@ async function fetchYouTubeVideo(title: string, cuisine: string): Promise<{ thum
   }
 }
 
-const MODELS = ["moonshotai/kimi-k2-instruct-0905", "llama-3.3-70b-versatile"] as const;
+const MODELS = ["llama-3.3-70b-versatile", "llama-3.1-70b-versatile", "mixtral-8x7b-32768"] as const;
 
 const DURATION_LABEL: Record<string, string> = {
   quick: "30 minutes or less",
@@ -155,6 +155,7 @@ export async function POST(request: NextRequest) {
   }
 
   if (!raw) {
+    console.error("[generate] All models failed. GROQ_API_KEY set:", !!process.env.GROQ_API_KEY);
     return NextResponse.json({ error: "AI generation failed" }, { status: 500 });
   }
 

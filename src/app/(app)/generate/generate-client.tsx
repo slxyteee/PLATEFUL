@@ -127,6 +127,7 @@ export function GenerateClient({ pantryIngredients, userDietary }: Props) {
       try {
         sessionStorage.setItem("plateful-last-recipes", JSON.stringify(data.recipes ?? []));
       } catch {}
+      router.push("/generate/results");
     } catch {
       setError("Network error — please try again");
     } finally {
@@ -283,27 +284,6 @@ export function GenerateClient({ pantryIngredients, userDietary }: Props) {
               >
                 <Plus className="w-3 h-3" />
               </button>
-            </div>
-          </div>
-
-          {/* Dietary */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-medium text-muted-foreground">Dietary (optional)</label>
-            <div className="flex flex-wrap gap-1.5">
-              {DIETARY_OPTIONS.map((d) => (
-                <button
-                  key={d}
-                  onClick={() => toggleDietary(d)}
-                  className={cn(
-                    "px-3 py-1 rounded-full border text-xs font-medium transition-colors capitalize",
-                    filters.dietary.includes(d)
-                      ? "bg-secondary/20 text-secondary-foreground border-secondary/40"
-                      : "border-border hover:border-secondary/40"
-                  )}
-                >
-                  {d}
-                </button>
-              ))}
             </div>
           </div>
 

@@ -4,9 +4,9 @@ import { cn } from "@/lib/utils";
 import type { Recipe } from "@/types";
 
 const DIFFICULTY_COLOR = {
-  easy: "bg-green-100 text-green-700",
-  medium: "bg-yellow-100 text-yellow-700",
-  hard: "bg-red-100 text-red-700",
+  easy: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+  medium: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
+  hard: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
 };
 
 const CUISINE_GRADIENTS = [
@@ -105,7 +105,7 @@ export function RecipeCard({ recipe, index = 0, onCook }: RecipeCardProps) {
 
         {/* Missing ingredients */}
         {missingCount > 0 && (
-          <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+          <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 dark:bg-amber-900/20 dark:border-amber-800/50 dark:text-amber-400">
             Missing {missingCount} ingredient{missingCount === 1 ? "" : "s"}:{" "}
             {recipe.missing_ingredients?.slice(0, 2).join(", ")}
             {missingCount > 2 ? ` +${missingCount - 2} more` : ""}

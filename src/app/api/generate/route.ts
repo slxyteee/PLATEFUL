@@ -35,7 +35,7 @@ async function fetchYouTubeVideo(title: string, cuisine: string): Promise<{ thum
   }
 }
 
-const MODELS = ["llama3-8b-8192", "llama-3.3-70b-versatile"] as const;
+const MODELS = ["llama3-8b-8192", "gemma2-9b-it", "llama-3.3-70b-versatile"] as const;
 
 const DURATION_LABEL: Record<string, string> = {
   quick: "30 minutes or less",
